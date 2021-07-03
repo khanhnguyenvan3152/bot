@@ -12,20 +12,40 @@ client.filters = client.config.filters;
 client.commands = new discord.Collection();
 
 let timer = null
-
-
+const NotificationLevels = ["Đi ngủ đi bạn êi","Bé ơi ngủ đi đêm đã khuya rồi","Ôi bạn ơi, sức đề kháng bạn kém là do bạn thức khuya nhiều đấy bạn ạ"]
+class MemberNotification{
+    id;
+    count = 0;
+    notify = function()
+    {
+        return NotificationLevels[this.count];
+    }
+    constructor(id)
+    {
+        this.id = id;
+    };
+    AwarenessIncrease()
+    {
+        if(count <2) count ++;
+    }
+}
+var membersAwareness = [];
 client.on('ready',() =>{setInterval(function(){
     const date = new Date();
-    if(date.getHours() === 4)
+    if(date.getHours() === 16)
     {
         const guild = client.guilds.cache.find(g => g.name === 'Land of Fuck b0ys');
         const channel = client.channels.cache.find(ch => ch.name.toLowerCase() ==="life-pro-tips");
         const onlinemembers = guild.members.cache.filter(mem => (mem.presence.status === 'online' || mem.presence.status ==='idle')&& !mem.user.bot);
+        onlinemembers.map(member =>{
+             let info = new MemberNotification(member.id); 
+             if(membersAwareness.find(info.id)===undefined) 
+             membersAwareness.push(info)})
         let strmem = ``;
-        onlinemembers.map(member => {strmem+= `${member} `});
-        channel.send(`Đi ngủ đi ${strmem}`);
+        onlinemembers.map(member => {channel.send(`${member}` + membersAwareness.find(x=>x.id==member.id).notify)});
+        
     }
-},1200000)})
+},120000)})
 fs.readdirSync('./commands').forEach(dirs => {
     const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
 
