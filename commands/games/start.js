@@ -4,16 +4,7 @@ const connectToMongoDB = async(member,cb)=>{
     await mongo().then(async(mongoose)=>{
         try{
             const oneUser = await userSchema.findOne({id:member.id,guildId:member.guildId})
-            if(oneUser == null)
-            {
-                 const user = {
-                    id: member.id,
-                    guildId: member.guildId,
-                    balance:0
-                }
-                await new userSchema(user).save()
-                cb();   
-            }
+            await cb(oneUser)
         }
         finally{
             mongoose.connection.close();
@@ -44,8 +35,21 @@ module.exports = {
            guildId: message.guild.id,
        }
        console.log(member)
-       connectToMongoDB(member,function(){
-           message.channel.send(`${message.author} Bắt đầu đầu tư mạo hiểm`)
+       connectToMongoDB(member,async function(oneUser){
+           if(oneUser == null)
+           {
+                const user = {
+                    id: member.id,
+                    guildId: member.guildId,
+                    balance:0
+                }
+                await new userSchema(user).save()
+                message.channel.send(`${message.author} Bắt đầu đầu tư mạo hiểm`)
+           }
+           else
+           {
+               message.channel.send(`${message.author} đã vào nghề từ trước rồi`)
+           }
        })
       
     },

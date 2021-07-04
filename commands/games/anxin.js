@@ -1,19 +1,11 @@
 const mongo = require('../../models/db')
 const userSchema = require('../../models/user-schema')
-const anxinlogSchema = require('../..models/anxinlog-schema')
+const anxinlogSchema = require('../../models/anxinlog-schema')
 const connectToMongoDB = async(member,cb)=>{
     await mongo().then(async(mongoose)=>{
         try{
             const oneUser = await userSchema.findOne({id:member.id,guildId:member.guildId})
-            const log = await anxinlogSchema.findOne({id:member.id,guildId:member.guilId})
-            if(log == null)
-            {
-                const newLog = {
-                    id : member.id,
-                    guildId: member.guildId,
-                }
-                await new anxinlogSchema(newLog).save()
-            }
+            const log = await anxinlogSchema.findOne({id:member.id,guildId:member.guildId})
             await cb(oneUser,log)
         }
         finally{
@@ -44,6 +36,17 @@ const dialogResult = function(choice,addon)
             return 'Nhặt được ' + addon + ' đồng'
     }
 }
+function secondsToHms(d) {
+    d = Number(d);
+    var h = Math.floor(d / 3600);
+    var m = Math.floor(d % 3600 / 60);
+    var s = Math.floor(d % 3600 % 60);
+
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    return hDisplay + mDisplay + sDisplay; 
+}
 var rate = ()=>{return Math.floor(Math.random() * 100)}
 var money = ()=>{return Math.floor(Math.random()*200000)}
 module.exports = {
@@ -51,7 +54,7 @@ module.exports = {
     aliases: [],
     category: 'games',
     utilisation: '{prefix}anxin',
-
+    cooldown: 1,
     execute(client, message) {
         var member = {
             id: message.author.id,
@@ -62,28 +65,55 @@ module.exports = {
         {
             if(log!=null)
             {
-                const logDate = Date.parse(log.updatedAt)
-                const secondDiff = (date - logDate)/1000;
-                if(secondDiff > 0)
+                const logDate = new Date(log.updatedAt)
+                const secondDiff = (date.getTime() - logDate.getTime())/1000;
+                if(secondDiff<3600)
                 {
-                    const result = new Date(secondDiff * 1000).toISOString().substr(11, 8)
-                    message.channel.send(`${member.id} Mày phải đợi ${result}`)
+                    const result = secondsToHms(3600-secondDiff)
+                    message.channel.send(`${message.author} Mày phải đợi ${result}`)
+                    return;
                 }
             }
             if(oneUser!=null)
             {
-                if(rate()>79)
+                if(rate()>60)
                 {
                     const addon = money();
                     let total = oneUser.balance + addon;
                     oneUser.balance = total;
                     await oneUser.save();
-                    log.amount = addon;
-                    await log.save();
+                    if(log !=null)
+                    {
+                        log.amount = addon;
+                        await log.save();
+                    }
+                    else
+                    {
+                        const newlog ={
+                            id:member.id,
+                            guidlId: member.guildId,
+                            amount:addon
+                        }
+                        await new anxinlogSchema(newlog).save()
+                    }
                     message.channel.send(`${message.author}` + dialogResult(dialogChoice(),addon))  
                 }
                 else
                 {
+                    if(log !=null)
+                    {
+                        log.amount = 0;
+                        await log.save();
+                    }
+                    else
+                    {
+                        const newlog ={
+                            id:member.id,
+                            guidlId: member.guildId,
+                            amount:0
+                        }
+                        await new anxinlogSchema(newlog).save()
+                    }
                     message.channel.send(`Bạn đéo ăn xin được cái gì cả`)
                 }
             }
