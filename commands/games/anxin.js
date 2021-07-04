@@ -57,8 +57,19 @@ module.exports = {
             id: message.author.id,
             guildId: message.guild.id,
         }
+        const date = new Date()
         connectToMongoDB(member,async function(oneUser,log)
         {
+            if(log!=null)
+            {
+                const logDate = Date.parse(log.updatedAt)
+                const secondDiff = (date - logDate)/1000;
+                if(secondDiff > 0)
+                {
+                    const result = new Date(secondDiff * 1000).toISOString().substr(11, 8)
+                    message.channel.send(`${member.id} Mày phải đợi ${result}`)
+                }
+            }
             if(oneUser!=null)
             {
                 if(rate()>79)
@@ -67,7 +78,6 @@ module.exports = {
                     let total = oneUser.balance + addon;
                     oneUser.balance = total;
                     await oneUser.save();
-                    let amount = addon;
                     log.amount = addon;
                     await log.save();
                     message.channel.send(`${message.author}` + dialogResult(dialogChoice(),addon))  
