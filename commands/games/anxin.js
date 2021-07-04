@@ -42,9 +42,9 @@ function secondsToHms(d) {
     var m = Math.floor(d % 3600 / 60);
     var s = Math.floor(d % 3600 % 60);
 
-    var hDisplay = h > 0 ? h + (h == 1 ? " hour, " : " hours, ") : "";
-    var mDisplay = m > 0 ? m + (m == 1 ? " minute, " : " minutes, ") : "";
-    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+    var hDisplay = h > 0 ? h + (h == 1 ? " giờ " : " giờ ") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " phút " : " phút ") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " giây" : " giây") : "";
     return hDisplay + mDisplay + sDisplay; 
 }
 var rate = ()=>{return Math.floor(Math.random() * 100)}
@@ -91,7 +91,7 @@ module.exports = {
                     {
                         const newlog ={
                             id:member.id,
-                            guidlId: member.guildId,
+                            guildId: member.guildId,
                             amount:addon
                         }
                         await new anxinlogSchema(newlog).save()
@@ -109,7 +109,7 @@ module.exports = {
                     {
                         const newlog ={
                             id:member.id,
-                            guidlId: member.guildId,
+                            guildId: member.guildId,
                             amount:0
                         }
                         await new anxinlogSchema(newlog).save()
