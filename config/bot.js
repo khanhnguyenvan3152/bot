@@ -8,9 +8,9 @@ module.exports = {
     },
 
     discord: {
-        token: 'ODU3Njc2ODc2MjA5OTc5NDAz.YNTD1g.U9_tB27TQsdwXajKdpp2fcdyJYM',
+        token: '',
         prefix: '?',
-        activity: 'with my life',
+        activity: '',
     },
     mongoPass: 'nguyenvankhanh2000',
     filters: ['8D', 'gate', 'haas', 'phaser', 'treble', 'tremolo', 'vibrato', 'reverse', 'karaoke', 'flanger', 'mcompand', 'pulsator', 'subboost', 'bassboost', 'vaporwave', 'nightcore', 'normalizer', 'surrounding'],
