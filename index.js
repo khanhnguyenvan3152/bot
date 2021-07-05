@@ -3,49 +3,37 @@ const discord = require('discord.js');
 
 const client = new discord.Client({ disableMentions: 'everyone' });
 
-const { Player } = require('discord-player');
+const { Player, Discord } = require('discord-player');
 
 client.player = new Player(client);
 client.config = require('./config/bot');
 client.emotes = client.config.emojis;
 client.filters = client.config.filters;
 client.commands = new discord.Collection();
-
+client.cooldowns = new discord.Collection();
 let timer = null
 const NotificationLevels = ["Đi ngủ đi bạn êi","Bé ơi ngủ đi đêm đã khuya rồi","Ôi bạn ơi, sức đề kháng bạn kém là do bạn thức khuya nhiều đấy bạn ạ"]
-class MemberNotification{
-    id;
-    count = 0;
-    notify = function()
-    {
-        return NotificationLevels[this.count];
-    }
-    constructor(id)
-    {
-        this.id = id;
-    };
-    AwarenessIncrease()
-    {
-        if(count <2) count ++;
-    }
-}
-var membersAwareness = [];
+
 client.on('ready',() =>{setInterval(function(){
-    // const date = new Date();
-    // if(date.getHours() === 16)
-    // {
-    //     const guild = client.guilds.cache.find(g => g.name === 'Land of Fuck b0ys');
-    //     const channel = client.channels.cache.find(ch => ch.name.toLowerCase() ==="life-pro-tips");
-    //     const onlinemembers = guild.members.cache.filter(mem => (mem.presence.status === 'online' || mem.presence.status ==='idle')&& !mem.user.bot);
-    //     onlinemembers.map(member =>{
-    //          let info = new MemberNotification(member.id); 
-    //          if(membersAwareness.find(info.id)===undefined) 
-    //          membersAwareness.push(info)})
-    //     let strmem = ``;
-    //     onlinemembers.map(member => {channel.send(`${member}` + membersAwareness.find(x=>x.id==member.id).notify)});
-        
-    // }
+  
 },120000)})
+//de fix sau
+// const {cooldowns} = client;
+// {
+// if(!cooldowns.has(command.name))
+//     cooldowns.set(command.name,new Discord.Collection())
+// }
+
+// const now = Date.now();
+// const timestamps = cooldowns.get(command.name);
+// const cooldownAmount = (command.cooldown || 1) * 1000;
+// if(timestamps.has(message.author.id)){
+//     const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
+//     if(now < expirationTime){
+//         const timeLeft = (expiritionTime - now)/1000;
+//         return message.reply(`Please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\`command.`);
+//     }
+// };
 fs.readdirSync('./commands').forEach(dirs => {
     const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
 

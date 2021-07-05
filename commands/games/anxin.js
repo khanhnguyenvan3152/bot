@@ -67,7 +67,7 @@ module.exports = {
             {
                 const logDate = new Date(log.updatedAt)
                 const secondDiff = (date.getTime() - logDate.getTime())/1000;
-                if(secondDiff<3600)
+                if(secondDiff<600)
                 {
                     const result = secondsToHms(3600-secondDiff)
                     message.channel.send(`${message.author} Mày phải đợi ${result}`)
@@ -76,7 +76,7 @@ module.exports = {
             }
             if(oneUser!=null)
             {
-                if(rate()>60)
+                if(rate()>39)
                 {
                     const addon = money();
                     let total = oneUser.balance + addon;
