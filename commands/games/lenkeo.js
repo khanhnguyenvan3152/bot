@@ -26,14 +26,15 @@ module.exports = {
            id: message.author.id,
            guildId: message.guild.id,
        }
+       var idChallenged = args[0].replace(/[\\<>@#&!]/g,"")
        var member2 ={
-           id: message.mention.users.first().id,
+           id: args[0],
            guildId: message.guild.id
        }
        const prefix = client.config.discord.prefix;
 
        console.log(member1.id)
-       console.log(member2.id)
+       console.log(idChallenged)
        message.channel.send(`${member2.id}`)
     },
 }

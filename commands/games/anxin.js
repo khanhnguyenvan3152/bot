@@ -69,7 +69,7 @@ module.exports = {
                 const secondDiff = (date.getTime() - logDate.getTime())/1000;
                 if(secondDiff<600)
                 {
-                    const result = secondsToHms(3600-secondDiff)
+                    const result = secondsToHms(600-secondDiff)
                     message.channel.send(`${message.author} Mày phải đợi ${result}`)
                     return;
                 }
