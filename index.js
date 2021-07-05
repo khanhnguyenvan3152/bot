@@ -31,20 +31,20 @@ class MemberNotification{
 }
 var membersAwareness = [];
 client.on('ready',() =>{setInterval(function(){
-    const date = new Date();
-    if(date.getHours() === 16)
-    {
-        const guild = client.guilds.cache.find(g => g.name === 'Land of Fuck b0ys');
-        const channel = client.channels.cache.find(ch => ch.name.toLowerCase() ==="life-pro-tips");
-        const onlinemembers = guild.members.cache.filter(mem => (mem.presence.status === 'online' || mem.presence.status ==='idle')&& !mem.user.bot);
-        onlinemembers.map(member =>{
-             let info = new MemberNotification(member.id); 
-             if(membersAwareness.find(info.id)===undefined) 
-             membersAwareness.push(info)})
-        let strmem = ``;
-        onlinemembers.map(member => {channel.send(`${member}` + membersAwareness.find(x=>x.id==member.id).notify)});
+    // const date = new Date();
+    // if(date.getHours() === 16)
+    // {
+    //     const guild = client.guilds.cache.find(g => g.name === 'Land of Fuck b0ys');
+    //     const channel = client.channels.cache.find(ch => ch.name.toLowerCase() ==="life-pro-tips");
+    //     const onlinemembers = guild.members.cache.filter(mem => (mem.presence.status === 'online' || mem.presence.status ==='idle')&& !mem.user.bot);
+    //     onlinemembers.map(member =>{
+    //          let info = new MemberNotification(member.id); 
+    //          if(membersAwareness.find(info.id)===undefined) 
+    //          membersAwareness.push(info)})
+    //     let strmem = ``;
+    //     onlinemembers.map(member => {channel.send(`${member}` + membersAwareness.find(x=>x.id==member.id).notify)});
         
-    }
+    // }
 },120000)})
 fs.readdirSync('./commands').forEach(dirs => {
     const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
