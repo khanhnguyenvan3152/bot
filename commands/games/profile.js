@@ -17,19 +17,30 @@ module.exports = {
     category: 'games',
     utilisation: '{prefix}profile',
 
-    execute(client, message) {
-        var member = {
-            id: message.author.id,
-            guildId: message.guild.id,
+    execute(client, message,args) {
+ 
+        let  member = {
+                id: message.author.id,
+                username: message.author.username,
+                guildId: message.guild.id,
+                avatar: message.author.displayAvatarURL()
+            }
+
+        let targetMember = message.mentions.members.first()
+        if(targetMember !=null)
+        {
+            member.id = targetMember.user.id;
+            member.username = targetMember.user.username
+            member.avatar = targetMember.user.displayAvatarURL()
         }
-        connectToMongoDB(member,function(oneUser)
+         connectToMongoDB(member,function(oneUser)
         {
             if(oneUser!=null)
             {
                 message.channel.send({
                     embed: {
                         color: '#0055ff',
-                        author: { name: message.author.username, icon_url:message.author.displayAvatarURL() },
+                        author: { name: member.username, icon_url:member.avatar },
                         footer: { text: '' },
                         fields: [
                             { name: 'Balance', value:oneUser.balance}

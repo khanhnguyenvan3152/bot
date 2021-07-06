@@ -76,7 +76,7 @@ module.exports = {
             }
             if(oneUser!=null)
             {
-                if(rate()>39)
+                if(rate()>20)
                 {
                     const addon = money();
                     let total = oneUser.balance + addon;

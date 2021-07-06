@@ -1,18 +1,30 @@
 const mongo = require('../../models/db')
 const userSchema = require('../../models/user-schema')
 const oantutiSchema = require('../../models/oantutilog-schema')
-const { Message } = require('discord.js')
 const connectToMongoDB = async(member,cb)=>{
     await mongo().then(async(mongoose)=>{
         try{
-            const oneUser = await userSchema.findOne({id:member.id,guildId:member.guildId})
-            const log = await oantutiSchema.findOne({id:member.id,guildId:member.guildId})
+            let oneUser = await userSchema.findOne({id:member.id,guildId:member.guildId})
+            let log = await oantutiSchema.findOne({id:member.id,guildId:member.guildId})
             await cb(oneUser,log)
         }
         finally{
             mongoose.connection.close();
         }
     })
+}
+
+const getUser = async function(member){
+    let user = null 
+    await mongo().then(async(mongoose)=>{
+        try{
+            user = await userSchema.findOne({id:member.id,guildId:member.guildId}).exec();
+        }
+        finally{
+            mongoose.connection.close();
+        }
+    })
+    return user;
 }
 const playRecently = new Set();
 
@@ -71,18 +83,33 @@ module.exports = {
            id: message.author.id,
            guildId: message.guild.id,
        }
-       var value = args[0]
        if(args.length ==0 || args[0] === '0')
        {
            message.channel.send(`${message.author} phải nhập value để bet`)
            return;
        }
-       connectToMongoDB(member,async function(oneUser,log){
-           if(oneUser.balance === 0)
-           {
-               message.channel.send(`${message.author} làm gì có tiền mà đòi bet`)
-               return;
-           }
+       if(Number.isInteger(parseInt(args[0]))==false && (args[0]!='all'))
+       {
+           message.channel.send(`${message.author} Value nhập không hợp lệ!`)
+           return;
+       }
+       let user = await getUser(member)
+       if(user == null)
+       {
+           message.channel.send(`Bạn phải tham gia đầu tư mạo hiểm đã`)
+           return;
+        }
+       let balance = user.balance;
+       let value = args[0]
+       if(value === 'all') value = user.balance;
+       else{
+        value = parseInt(args[0])
+       }
+       if(balance == 0 || balance < value)
+       {
+            message.channel.send(`${message.author} làm gì có tiền mà đòi bet`)
+            return;
+       }
         const mess = await message.channel.send({
             embed :{
                     color:'#00ff62',
@@ -96,7 +123,6 @@ module.exports = {
             }
             }
         )
-        console.log(emojis)
         try {
                 await mess.react(emojis[0])
                 await mess.react(emojis[1])
@@ -113,71 +139,48 @@ module.exports = {
 
             collector.on('collect',async (reaction, user) => {
                 if(user.id == message.author.id)
-                {
-                    
+                { 
                     const userchoice = options.find(option => option.emoji === reaction.emoji.name)
                     const botchoice = selection()
+                    console.log(botchoice.emoji)
                     if(userchoice.emoji === botchoice.emoji) result = 'draw';
                     if(userchoice.name === botchoice.beats) result = 'botwin';
                     if(userchoice.beats === botchoice.name) result = 'userwin';
-                    console.log(result)
-                
-                        if(oneUser == null)
-                        {
-                            message.channel.send(`Bạn phải tham gia đầu tư mạo hiểm đã`)
-                            return;
-                        }
+                   
                     switch (result){
                         case 'draw':
-                            message.channel.send(`${message.author} hòa`);
+                            message.channel.send(`${message.author} Bot ra ${botchoice.emoji} hòa`);
                             break;
-                            case 'botwin':
-                                if(value === 'all') value = oneUser.balance 
-                                message.channel.send(`${message.author} Bot ra ${botchoice.emoji} Bot thắng, tài khoản -${value}`);
-                                if(log == null)
-                                {
-                                    const newlog = {
-                                        id: member.id,
-                                        guildId: member.guildId,
-                                        amount: parseInt(value)
-                                    }
-                                    await new oantutiSchema(newlog).save();
-                                }
-                                else
-                                {
-                                    log.amount = parseInt(value);
-                                    await log.save();
-                                }
-                                oneUser.balance = oneUser.balance - parseInt(value);
-                                await oneUser.save();
-                                break;
-                            case 'userwin':
-                                if(value === 'all') value = oneUser.balance 
-                                message.channel.send(`${message.author} Bot ra ${botchoice.emoji} Bạn thắng ${value}`)
-                                if(log == null)
-                                {
-                                    const newlog = {
-                                        id: member.id,
-                                        guildId: member.guildId,
-                                        amount: parseInt(value)
-                                    }
-                                    await new oantutiSchema(newlog).save();
-                                }
-                                else
-                                {
-                                    log.amount = parseInt(value);
-                                    await log.save();
-                                }
-                                oneUser.balance = oneUser.balance + parseInt(value);
-                                await oneUser.save()
-                                break;
-                            default:
-                                break;
+                        case 'botwin':
+                            balance = balance - value;
+                            message.channel.send(`${message.author} Bot ra ${botchoice.emoji} Bot thắng, tài khoản -${value}`);
+                            break;
+                        case 'userwin':
+                            balance = balance + value;
+                            message.channel.send(`${message.author} Bot ra ${botchoice.emoji} Bạn thắng ${value}`)
+                            break;
+                        default:
+                            break;
                     }
-                    
-                    return;
                 }
-        });
+        connectToMongoDB(member,async(oneUser,log)=>{
+            oneUser.balance = parseInt(balance);
+            await oneUser.save();
+            if(log==null)
+            {
+                const newlog = {
+                    id: member.id,
+                    guildId: member.guildId,
+                    amount: value
+                }
+                await log.save()
+            }
+            else
+            {
+                log.amount = value;
+                await log.save();
+            }
+        })
         collector.on('end', collected => {
             console.log(`Collected ${collected.size} items`);
 
@@ -186,7 +189,7 @@ module.exports = {
         playRecently.add(message.author.id)
         setTimeout(() => {
             playRecently.delete(message.author.id)
-        }, (15000));
+        }, (10000));
     }
        
     },
