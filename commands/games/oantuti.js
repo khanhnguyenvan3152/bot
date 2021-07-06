@@ -1,6 +1,7 @@
 const mongo = require('../../models/db')
 const userSchema = require('../../models/user-schema')
 const oantutiSchema = require('../../models/oantutilog-schema')
+const { Message } = require('discord.js')
 const connectToMongoDB = async(member,cb)=>{
     await mongo().then(async(mongoose)=>{
         try{
@@ -13,6 +14,8 @@ const connectToMongoDB = async(member,cb)=>{
         }
     })
 }
+const playRecently = new Set();
+
 function secondsToHms(d) {
     d = Number(d);
     var h = Math.floor(d / 3600);
@@ -58,6 +61,12 @@ module.exports = {
     utilisation: '{prefix}oantuti',
     cooldown:1,
     async execute(client, message,args) {
+        if(playRecently.has(message.author.id))
+        {
+            message.channel.send(`Bạn gõ quá nhanh, vui lòng đợi!`)
+            return;
+        }
+        else {
        var member = {
            id: message.author.id,
            guildId: message.guild.id,
@@ -171,9 +180,14 @@ module.exports = {
         });
         collector.on('end', collected => {
             console.log(`Collected ${collected.size} items`);
+
         });
     })
-       
+        playRecently.add(message.author.id)
+        setTimeout(() => {
+            playRecently.delete(message.author.id)
+        }, (15000));
+    }
        
     },
 }
