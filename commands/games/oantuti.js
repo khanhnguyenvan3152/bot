@@ -142,7 +142,6 @@ module.exports = {
                 { 
                     const userchoice = options.find(option => option.emoji === reaction.emoji.name)
                     const botchoice = selection()
-                    console.log(botchoice.emoji)
                     if(userchoice.emoji === botchoice.emoji) result = 'draw';
                     if(userchoice.name === botchoice.beats) result = 'botwin';
                     if(userchoice.beats === botchoice.name) result = 'userwin';
@@ -173,7 +172,7 @@ module.exports = {
                     guildId: member.guildId,
                     amount: value
                 }
-                await log.save()
+                await new oantutiSchema(newlog).save();
             }
             else
             {
@@ -182,7 +181,7 @@ module.exports = {
             }
         })
         collector.on('end', collected => {
-            console.log(`Collected ${collected.size} items`);
+            
 
         });
     })
