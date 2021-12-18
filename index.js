@@ -15,9 +15,7 @@ client.cooldowns = new discord.Collection();
 let timer = null
 const NotificationLevels = ["Đi ngủ đi bạn êi","Bé ơi ngủ đi đêm đã khuya rồi","Ôi bạn ơi, sức đề kháng bạn kém là do bạn thức khuya nhiều đấy bạn ạ"]
 
-client.on('ready',() =>{setInterval(function(){
-  
-},120000)})
+
 //de fix sau
 // const {cooldowns} = client;
 // {
