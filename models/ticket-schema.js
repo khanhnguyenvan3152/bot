@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const {Types} = mongoose
+const {Types} = require('mongoose').Schema
 
 const TicketSchema = new mongoose.Schema({
     user: {
@@ -11,7 +11,10 @@ const TicketSchema = new mongoose.Schema({
         ref: 'match'
     },
     side: String,
-    value: Types.Number,
+    value:{
+        type: Types.Number, 
+        default: 0
+    },
     rate: Types.Number,
 })
 

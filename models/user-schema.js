@@ -7,14 +7,14 @@ const UserSchema = mongoose.Schema({
     balance: Number
 })
 
-UserSchema.methods.bet = async function (match,choice,value){
+UserSchema.methods.bet = async function (matchId,choice,value){
     let res;
-    let match = await Match.findById(match)
+    let match = await Match.findById(matchId)
     if(match){
-        if(match.status == 'completed' || match.status == 'ongoing') res = 'Match is already started'
+        if(match.status == 'completed') res = 'Match is already started'
         else{
             let matchId = match._id
-            let rate = (side=='away')?match.oddAway:match.oddHome
+            let rate = (choice=='away')?match.oddAway:match.oddHome
             let ticket = new Ticket({
                 match: matchId,
                 user:this._id,
@@ -23,6 +23,14 @@ UserSchema.methods.bet = async function (match,choice,value){
                 rate:rate
             })
             await ticket.save()
+            match.tickets.push(ticket._id)
+            match.total = match.total + value
+            if(choice=='away'){
+                match.totalAway = match.totalAway + value
+            }else{
+                match.totalHome = match.totalHome + value
+            }
+            await match.save()
             this.balance = this.balance - value
             await this.save()
         }

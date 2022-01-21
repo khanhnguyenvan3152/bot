@@ -4,6 +4,8 @@ const discord = require('discord.js');
 const client = new discord.Client({ disableMentions: 'everyone' });
 
 const { Player } = require('discord-player');
+const db = require('./models/db')
+db.connect()
 
 client.player = new Player(client);
 client.config = require('./config/bot');
@@ -11,7 +13,7 @@ client.emotes = client.config.emojis;
 client.filters = client.config.filters;
 client.commands = new discord.Collection();
 
-let timer = null
+
 const NotificationLevels = ["Đi ngủ đi bạn êi","Bé ơi ngủ đi đêm đã khuya rồi","Ôi bạn ơi, sức đề kháng bạn kém là do bạn thức khuya nhiều đấy bạn ạ"]
 class MemberNotification{
     id;
@@ -48,7 +50,6 @@ client.on('ready',() =>{setInterval(function(){
 },120000)})
 fs.readdirSync('./commands').forEach(dirs => {
     const commands = fs.readdirSync(`./commands/${dirs}`).filter(files => files.endsWith('.js'));
-
     for (const file of commands) {
         const command = require(`./commands/${dirs}/${file}`);
         console.log(`Loading command ${file}`);

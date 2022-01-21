@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
-const Types = mongoose.Schema.Types;
+const {Types} =  require('mongoose').Schema
 const MatchSchema = new mongoose.Schema({
     homeTeam: {
         type: Types.ObjectId,
-        ref: 'team'
+        ref:'team'
     },
     awayTeam:{
         type:Types.ObjectId,
@@ -24,7 +24,7 @@ const MatchSchema = new mongoose.Schema({
         default: 0
     },
     tickets: [{
-        types:Types.ObjectId,
+        type:Types.ObjectId,
         ref:'ticket'
     }],
     score:{

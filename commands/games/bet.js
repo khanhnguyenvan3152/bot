@@ -1,5 +1,5 @@
 const User = require('../../models/user-schema')
-
+const Match =require('../../models/match-schema')
 module.exports ={
     name: 'bet',
     aliases: [],
@@ -12,9 +12,14 @@ module.exports ={
             guildId: message.guild.id
         }
         let user = await User.findOne({id:member.id,guildId:member.guildId})
-        let [matchId,side,value] = args.split(' ')
+        let [matchId,side,value] = args
+        side = side.toLowerCase()
+        if(value > user.balance){
+            message.channel.send(`Bạn không đủ tiền để bet`)
+            return;
+        }
         await user.bet(matchId,side,value)
-        
+        message.channel.send(`Bạn đã bet trận ${matchId} với ${value} vào ${side}`)
     }
 }
 

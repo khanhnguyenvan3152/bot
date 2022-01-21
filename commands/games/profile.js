@@ -1,15 +1,13 @@
 const mongo = require('../../models/db')
 const userSchema = require('../../models/user-schema')
 const connectToMongoDB = async(member,cb)=>{
-    await mongo().then(async(mongoose)=>{
         try{
             const oneUser = await userSchema.findOne({id:member.id,guildId:member.guildId})
             cb(oneUser)
         }
-        finally{
-            mongoose.connection.close();
+        catch(err){
+            console.log(err)
         }
-    })
 }
 module.exports = {
     name: 'profile',

@@ -1,12 +1,14 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const mongoPass = require('../config/bot.js').mongoPass
-const uri = `mongodb+srv://discord-admin-1:${mongoPass}@cluster0.mfky7.mongodb.net/padoru?retryWrites=true&w=majority`;
 
-module.exports = async () =>{
-    await mongoose.connect(uri,{
+const uri = `mongodb+srv://discord-admin-1:${process.env.DBPASSWORD}@cluster0.mfky7.mongodb.net/padoru?retryWrites=true&w=majority`;
+const connect = function(){
+    mongoose.connect(uri,{
         useNewUrlParser:true,
         useUnifiedTopology:true,
+    }).then(()=>{
+        console.log('connected')
     })
-    return mongoose
 }
+
+module.exports = {connect}
