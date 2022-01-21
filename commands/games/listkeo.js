@@ -80,11 +80,11 @@ module.exports = {
                         },
                         timestamp: new Date(),
                     };
-                    const exampleEmbed = new MessageEmbed()
-                        .setTitle('Some title')
-                        .attachFiles([`${homeTeam.alias}${awayTeam.alias}.png`])
-                        .addField('Lmao','Lmao')
-                        .setThumbnail(`attachment://${homeTeam.alias}${awayTeam.alias}.png`);
+                    // const exampleEmbed = new MessageEmbed()
+                    //     .setTitle('Some title')
+                    //     .attachFiles([`${homeTeam.alias}${awayTeam.alias}.png`])
+                    //     .addField('Lmao','Lmao')
+                    //     .setThumbnail(`attachment://${homeTeam.alias}${awayTeam.alias}.png`);
                     message.channel.send({embed, files: [file]});
                     setTimeout(function () {
                         ImageHelper.removeImages(homeTeam, awayTeam)

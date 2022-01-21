@@ -2,28 +2,23 @@ const mongo = require('../../models/db')
 const userSchema = require('../../models/user-schema')
 const oantutiSchema = require('../../models/oantutilog-schema')
 const connectToMongoDB = async(member1,member2,cb)=>{
-    await mongo().then(async(mongoose)=>{
         try{
             let sender = await userSchema.findOne({id:member1.id,guildId:member1.guildId})
             let receiver = await userSchema.findOne({id:member2.id,guildId:member2.guildId})
             await cb(sender,receiver)
+        }catch(err){
+            console.log(err)
         }
-        finally{
-            mongoose.connection.close();
-        }
-    })
 }
 
 const getUser = async function(member){
     let user = null 
-    await mongo().then(async(mongoose)=>{
         try{
             user = await userSchema.findOne({id:member.id,guildId:member.guildId}).exec();
         }
-        finally{
-            mongoose.connection.close();
+        catch(err){
+            console.log(err)
         }
-    })
     return user;
 }
 

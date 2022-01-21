@@ -1,7 +1,7 @@
 const fs = require('fs');
 const discord = require('discord.js');
 const mongo = require('./models/db')
-mongo()
+mongo.connect()
 const client = new discord.Client({ disableMentions: 'everyone' });
 
 const { Player, Discord } = require('discord-player');

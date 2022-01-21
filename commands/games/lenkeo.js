@@ -3,17 +3,14 @@ const userSchema = require('../../models/user-schema')
 const LenkeoSchema = require('../../models/lenkeolog-schema')
 
 const connectToMongoDB = async (challenger,challenged,cb)=>{
-    await mongo().then(async (mongoose)=>{
         try{
             const user1 = await userSchema.findOne({id:challenger.id,guildId:challenger.guildId})
             const user2 = await userSchema.findOne({id:challenger.id,guildId:challenger.guildId})
             const log = await lenkeoSchema.findOne({challengerId:challenger.id,challengedId:challenged.id,guildId:challenged.id})
             cb(user1,user2,log)
+        }catch(err){
+            console.log(err)
         }
-        finally{
-            mongoose.connection.close();
-        }
-    })
 }
 module.exports = {
     name: 'lenkeo',
