@@ -22,7 +22,9 @@ UserSchema.methods.bet = async function (match,choice,value){
                 side: choice,
                 rate:rate
             })
-          
+            await ticket.save()
+            this.balance = this.balance - value
+            await this.save()
         }
     }
 }
