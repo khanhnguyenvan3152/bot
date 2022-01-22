@@ -27,6 +27,7 @@ module.exports = {
                 const users = await User.find({})
                 const collector = message.channel.createMessageCollector(filter,{time:60000})  
                 collector.on('collect', async (m)=>{
+                    console.log(players)
                     const mess = m.content.trim();
                     const option = mess.slice(1,4);
                     const value = parseInt(mess.slice(5,mess.length))
@@ -55,7 +56,7 @@ module.exports = {
                         }
                         else
                         {
-                            if(players.find(p=>p.id==player.id))
+                            if(players.find(p=>p.id==player.id|| p.id.includes(player.id.toString())))
                             {
                                 let tmp = players[players.findIndex(p=>p.id==player.id)];
                                 if(tmp.option != player.option)
@@ -68,18 +69,17 @@ module.exports = {
                                     player.balance = player.balance - value;
                                     totalValue+=value;
                                     (option==='tai')?(valueTai+=value):(valueXiu+=value)
-                                    rateTai = valueTai/valueXiu;
-
+                                    rateTai = valueXiu/(valueXiu+valueTai);
+                                    rateXiu = valueTai/(valueXiu+valueTai);
                                     if (rateTai == Infinity) {rateTai = 0;}
                                     else{
                                         rateTai = Number(rateTai).toFixed(2)
                                     }
-                                    rateXiu = 1/rateTai;
                                     if(rateXiu == Infinity) {rateXiu = 0}
                                     else{
                                         rateXiu = Number(rateXiu).toFixed(2);
                                     }
-                                    m.channel.send(`${m.author} Đặt thêm ${value} vào cửa ${option}. Tổng ${players[players.findIndex(p=>p.id==player.id)].value}`)
+                                    m.channel.send(`${m.author} Đặt thêm ${value} vào cửa ${option}. Tổng đã đặt ${players[players.findIndex(p=>p.id==player.id)].value}`)
                                     await m.channel.send({
                                         embed:
                                         {
@@ -135,10 +135,16 @@ module.exports = {
                                 totalValue+=value;
                                 if(option==='tai') valueTai+=value;
                                 else valueXiu+=value;
-                                rateTai = valueTai/valueXiu;
-                                if (rateTai == Infinity) rateTai = 0;
-                                rateXiu = 1/rateTai;
-                                if(rateXiu == Infinity) rateXiu = 0;
+                                rateTai = valueXiu/(valueXiu+valueTai);
+                                rateXiu = valueTai/(valueXiu+valueTai);
+                                if (rateTai == Infinity) {rateTai = 0;}
+                                else{
+                                    rateTai = Number(rateTai).toFixed(2)
+                                }
+                                if(rateXiu == Infinity) {rateXiu = 0}
+                                else{
+                                    rateXiu = Number(rateXiu).toFixed(2);
+                                }
                                 m.channel.send(`${m.author} đặt ${value} vào ${option}`)
                                 await m.channel.send({
                                     embed:{ 
@@ -196,11 +202,12 @@ module.exports = {
                     players.forEach((player) =>{
                         if(player.option === result.winner)
                         {
+                            let rate = (result.winner =='tai')?rateTai:rateXiu;
                             player.balance = player.balance + player.value*(1+rate)
                         }
                     })
                     await updatePlayers(User,players);
-                    message.channel.send(`${result.winner} thắng`)
+                    message.channel.send(`Cái ra ${result.emojis}. Tổng ${result.value} ${result.winner} thắng`)
                     activated = false;
                 })
             
