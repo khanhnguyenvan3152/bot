@@ -4,7 +4,7 @@ const { MessageEmbed, MessageAttachment } = require('discord.js')
 const ImageHelper = require('../../helpers/imageHelper')
 module.exports = {
     name: 'listkeo',
-    aliases: [],
+    aliases: ['b'],
     category: 'games',
     utilisation: '{prefix}listkeo',
     async execute(client, message, args) {

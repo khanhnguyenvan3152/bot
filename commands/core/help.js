@@ -8,7 +8,7 @@ module.exports = {
         if (!args[0]) {
             const infos = message.client.commands.filter(x => x.category == 'Infos').map((x) => '`' + x.name + '`').join(', ');
             const music = message.client.commands.filter(x => x.category == 'Music').map((x) => '`' + x.name + '`').join(', ');
-
+            const games = message.client.commands.filter(x=> x.category == 'games').map((x)=> '`' + x.name + '`').join(', ')
             message.channel.send({
                 embed: {
                     color: 'ORANGE',
@@ -18,6 +18,7 @@ module.exports = {
                         { name: 'Bot', value: infos },
                         { name: 'Music', value: music },
                         { name: 'Filters', value: client.filters.map((x) => '`' + x + '`').join(', ') },
+                        { name: 'Games', value:games }
                     ],
                     timestamp: new Date(),
                     description: `To use filters, ${client.config.discord.prefix}filter (the filter). Example : ${client.config.discord.prefix}filter 8D.`,

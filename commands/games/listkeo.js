@@ -74,6 +74,10 @@ module.exports = {
                                 name: 'Bắt đầu',
                                 value: `${new Date(match.start)}`,
                             },
+                            {
+                                name: 'Cú pháp',
+                                value: `?bet [Match id] [home/away] [value]`
+                            }
                         ],
                         image: {
                             url: `attachment://${homeTeam.alias}${awayTeam.alias}.png`,

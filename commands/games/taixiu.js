@@ -1,7 +1,5 @@
 const {MongoClient} = require('mongodb')
-const mongoPass = require('../../config/bot').mongoPass
-const uri = `mongodb+srv://discord-admin-1:${mongoPass}@cluster0.mfky7.mongodb.net/padoru?retryWrites=true&w=majority`
-
+const User = require('../../models/user-schema')
 
 let activated = false;
 module.exports = {
@@ -21,16 +19,14 @@ module.exports = {
             let valueTai = 0;
             let rateTai = 0;
             let rateXiu = 0;
-            message.channel.send(`Start`)
+            message.channel.send(`Mở xới, cú pháp : ![tai/xiu] [value]`)
             activated = true;
             let players = [];
             const filter = (message) => {
                 return message.content.startsWith('!tai') || message.content.startsWith('!xiu');
             }
-            const mongoclient = new MongoClient(uri,{useNewUrlParser:true,useUnifiedTopology:true})
             try{
-                await mongoclient.connect()
-                const collection = mongoclient.db('padoru').collection("users");
+                const users = await User.find({})
                 const collector = message.channel.createMessageCollector(filter,{time:60000})  
                 collector.on('collect', async (m)=>{
                     const mess = m.content.trim();
@@ -44,7 +40,7 @@ module.exports = {
                         balance:0
                     }
                     console.log(player);
-                    let playerProfile = await collection.findOne({id:""+player.id,guildId:""+player.guildId},function(result){
+                    let playerProfile = await User.findOne({id:player.id,guildId:player.guildId},function(result){
                         return result;
                     })
                     console.log(playerProfile)
@@ -124,7 +120,7 @@ module.exports = {
                                             },
                                         }
                                     })
-                                    updateBalance(collection,player)
+                                    updateBalance(User,player)
                                 }
                             }
                             else{
@@ -183,7 +179,7 @@ module.exports = {
                                     }
                                 })
                             }
-                            updateBalance(collection,player);
+                            updateBalance(User,player);
                         }
                     
                     }
@@ -202,7 +198,7 @@ module.exports = {
                             player.balance = player.balance - player.value;
                         }
                     })
-                    await updatePlayers(collection,players);
+                    await updatePlayers(User,players);
                     message.channel.send(`${result.winner} thắng`)
                     activated = false;
                 })
@@ -213,9 +209,6 @@ module.exports = {
             {
                 console.log(e);
             }
-            finally{
-            }
-            mongoclient.close();
         }
         else{
             message.channel.send(`Đang có kèo mà`)
