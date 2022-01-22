@@ -1,19 +1,28 @@
 var fs = require('fs')
 var request = require('request')
 var sharp = require('sharp')
+var path = require('path')
 var joinImages = require('join-images')
 
 var download = function (uri, filename, callback) {
-    request.head(uri, function (err, res, body) {
-        request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
-    });
+    if(uri.includes('.svg')){
+        request.head(uri, function (err, res, body) {
+            request(uri).pipe(fs.createWriteStream(`images/${filename}.svg`)).on('close',function(){
+                sharp(`images/${filename}.svg`).png().toFile(`images/${filename}.png`).then(callback)
+            });
+        });
+    }else{
+        request.head(uri, function (err, res, body) {
+            request(uri).pipe(fs.createWriteStream(`images/${filename}.png`)).on('close', callback);
+        });
+    }
 };
 
 
 const getMergeImage = function (home, away,callback) {
-    download(home.imageURL, `images/${home.alias}.png`, function () {
+    download(home.imageURL, `${home.alias}`, function () {
         console.log('done')
-        download(away.imageURL, `images/${away.alias}.png`,async function () {
+        download(away.imageURL, `${away.alias}`,async function () {
             console.log('done')
             let image1 = sharp(`images/${home.alias}.png`)
             let image2 = sharp(`images/${away.alias}.png`)
@@ -46,13 +55,22 @@ const getMergeImage = function (home, away,callback) {
 }
 
 const removeImages = async function (home, away) {
-    fs.unlink(`${home.alias}${away.alias}.png`, function () {
-        fs.unlink(`images/${home.alias}.png`, function () {
-            fs.unlink(`images/${away.alias}.png`, function () {
-                console.log('done')
+    // fs.unlink(`${home.alias}${away.alias}.png`, function () {
+    //     fs.unlink(`images/${home.alias}.png`, function () {
+    //         fs.unlink(`images/${away.alias}.png`, function () {
+    //             console.log('done')
+    //         })
+    //     })
+    // })
+    fs.readdir('./images',(err,files)=>{
+        if(err) throw err;
+        for(const file of files){
+            fs.unlink(path.join('./images',file),err=>{
+                if(err) throw err
             })
-        })
+        }
     })
+
 }
 
 module.exports = {getMergeImage,removeImages}
