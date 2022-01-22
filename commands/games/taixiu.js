@@ -9,8 +9,6 @@ module.exports = {
     utilisation: '',
     async execute(client,message,args){
         const number = rand();
-        
-        
         if(activated == false)
         {
             activated = true;
@@ -71,9 +69,16 @@ module.exports = {
                                     totalValue+=value;
                                     (option==='tai')?(valueTai+=value):(valueXiu+=value)
                                     rateTai = valueTai/valueXiu;
-                                    if (rateTai == Infinity) rateTai = 0;
+
+                                    if (rateTai == Infinity) {rateTai = 0;}
+                                    else{
+                                        rateTai = Number(rateTai).toFixed(2)
+                                    }
                                     rateXiu = 1/rateTai;
-                                    if(rateXiu == Infinity) rateXiu = 0;
+                                    if(rateXiu == Infinity) {rateXiu = 0}
+                                    else{
+                                        rateXiu = Number(rateXiu).toFixed(2);
+                                    }
                                     m.channel.send(`${m.author} Đặt thêm ${value} vào cửa ${option}. Tổng ${players[players.findIndex(p=>p.id==player.id)].value}`)
                                     await m.channel.send({
                                         embed:
@@ -192,10 +197,6 @@ module.exports = {
                         if(player.option === result.winner)
                         {
                             player.balance = player.balance + player.value*(1+rate)
-                        }
-                        else
-                        {
-                            player.balance = player.balance - player.value;
                         }
                     })
                     await updatePlayers(User,players);

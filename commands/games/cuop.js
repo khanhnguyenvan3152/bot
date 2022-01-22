@@ -2,29 +2,25 @@ const mongo = require('../../models/db')
 const userSchema = require('../../models/user-schema')
 
 const connectToMongoDB = async(member1,member2,cb)=>{
-    await mongo().then(async(mongoose)=>{
-        try{
-            let firstUser = await userSchema.findOne({id:member1.id,guildId:member1.guildId})
-            let secondUser = await userSchema.findOne({id:member2.id,guildId:member2.guildId})
-            await cb(firstUser,secondUser);
-        }
-        finally{
-            mongoose.connection.close();
-        }
-    })
+    try{
+        let firstUser = await userSchema.findOne({id:member1.id,guildId:member1.guildId})
+        let secondUser = await userSchema.findOne({id:member2.id,guildId:member2.guildId})
+        await cb(firstUser,secondUser);
+    
+    }catch(err){
+        console.log(err)
+    }
 }
 
 const getUser = async function(member){
     let user = null 
-    await mongo().then(async(mongoose)=>{
         try{
             user = await userSchema.findOne({id:member.id,guildId:member.guildId}).exec();
+            return user;
         }
-        finally{
+        catch(err){
             mongoose.connection.close();
         }
-    })
-    return user;
 }
 const percent = function(targetLog)
 {
