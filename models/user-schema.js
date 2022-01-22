@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const Match = require('./match-schema')
+const Ticket = require('./ticket-schema')
 const UserSchema = mongoose.Schema({
     id: Number,
     guildId: String,
