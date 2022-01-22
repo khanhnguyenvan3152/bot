@@ -14,11 +14,12 @@ module.exports ={
         let user = await User.findOne({id:member.id,guildId:member.guildId})
         let [matchId,side,value] = args
         side = side.toLowerCase()
+        let betValue = Number(value)
         if(value > user.balance){
             message.channel.send(`Bạn không đủ tiền để bet`)
             return;
         }
-        await user.bet(matchId,side,value)
+        await user.bet(matchId,side,betValue)
         message.channel.send(`Bạn đã bet trận ${matchId} với ${value} vào ${side}`)
     }
 }
