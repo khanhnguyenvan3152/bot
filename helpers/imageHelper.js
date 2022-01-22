@@ -7,8 +7,8 @@ var joinImages = require('join-images')
 var download = function (uri, filename, callback) {
     if(uri.includes('.svg')){
         request.head(uri, function (err, res, body) {
-            request(uri).pipe(fs.createWriteStream(`images/${filename}.svg.png`)).on('close',function(){
-                sharp(`images/${filename}.svg.png`).png().toFile(`images/${filename}.png`).then(callback)
+            request(uri).pipe(fs.createWriteStream(`images/${filename}.svg`)).on('close',function(){
+                sharp(`images/${filename}.svg`).png().toFile(`images/${filename}.png`).then(callback)
             });
         });
     }else{
